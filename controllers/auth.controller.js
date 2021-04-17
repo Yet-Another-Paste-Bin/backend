@@ -12,16 +12,19 @@ exports.signup = (req, res) => {
       password: bcrypt.hashSync(req.body.password, 8),
     });
 
-    User.findOne({ username: req.body.username }, (err, user) => {
-      if (err) {
-        return res.status(500).end();
-      } else if (!user) {
-        newUser.save();
-        return res.status(200).end();
-      } else {
-        return res.status(500).end();
+    User.findOne(
+      { username: req.body.username, email: req.body.email },
+      (err, user) => {
+        if (err) {
+          return res.status(500).end();
+        } else if (!user) {
+          newUser.save();
+          return res.status(200).end();
+        } else {
+          return res.status(500).end();
+        }
       }
-    });
+    );
   } catch (error) {
     res.status(500).end();
   }
