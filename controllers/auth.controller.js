@@ -28,34 +28,40 @@ exports.signup = (req, res) => {
 };
 
 exports.login = (req, res) => {
-  User.findOne({ username: req.body.username }, (err, user) => {
-    if (err) return res.status(500).end();
-    if (!user) return res.status(404).end();
+  User.findOne(
+    { $or: [{ username: req.body.username }, { email: req.body.username }] },
+    (err, user) => {
+      if (err) return res.status(500).end();
+      if (!user) return res.status(404).end();
 
-    const validPassword = bcrypt.compareSync(req.body.password, user.password);
+      const validPassword = bcrypt.compareSync(
+        req.body.password,
+        user.password
+      );
 
-    if (!validPassword) {
-      return res
-        .status(401)
-        .send({
-          message: "Invalid Password",
+      if (!validPassword) {
+        return res
+          .status(401)
+          .send({
+            message: "Invalid Password",
+          })
+          .end();
+      }
+
+      const jwttoken = jwt.sign(
+        { id: user._id, username: user.username, email: user.email },
+        secret,
+        { expiresIn: 86400 }
+      );
+
+      res
+        .status(200)
+        .json({
+          id: user.id,
+          token: jwttoken,
+          username: user.username,
         })
         .end();
     }
-
-    const jwttoken = jwt.sign(
-      { id: user._id, username: user.username, email: user.email },
-      secret,
-      { expiresIn: 86400 }
-    );
-
-    res
-      .status(200)
-      .json({
-        id: user.id,
-        token: jwttoken,
-        username: user.username,
-      })
-      .end();
-  });
+  );
 };
