@@ -54,6 +54,7 @@ exports.login = (req, res) => {
       .json({
         id: user.id,
         token: jwttoken,
+        username: user.username,
       })
       .end();
   });
