@@ -5,7 +5,12 @@ module.exports = function checkDuplication(req, res, next) {
     return res.status(400).json({ message: "Bad Request" }).end();
 
   if (
-    [req.body.username, req.body.email, req.body.password].includes(undefined)
+    [
+      req.body.username,
+      req.body.email,
+      req.body.password,
+      req.body.phoneno,
+    ].includes(undefined)
   ) {
     return res.status(400).json({ message: "Bad Request" }).end();
   }
