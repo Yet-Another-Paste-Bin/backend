@@ -77,7 +77,7 @@ exports.login = (req, res) => {
       res
         .status(200)
         .json({
-          id: user.id,
+          id: user._id,
           token: jwttoken,
           username: user.username,
         })
