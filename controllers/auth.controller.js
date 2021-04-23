@@ -35,7 +35,7 @@ exports.login = (req, res) => {
     { $or: [{ username: req.body.username }, { email: req.body.username }] },
     (err, user) => {
       if (err) return res.status(500).end();
-      if (!user) return res.status(404).end();
+      if (!user) return res.status(401).end();
 
       const validPassword = bcrypt.compareSync(
         req.body.password,
