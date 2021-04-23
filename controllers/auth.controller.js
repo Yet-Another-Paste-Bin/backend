@@ -85,3 +85,76 @@ exports.login = (req, res) => {
     }
   );
 };
+
+exports.forgotpassword = (req, res) => {
+  const { username, email, phoneno, passwordresettoken } = req.body;
+
+  if ([username, email, phoneno, passwordresettoken].includes(undefined))
+    return res.status(400).send();
+
+  User.findOne(
+    {
+      username,
+      email,
+      phoneno,
+    },
+    (err, user) => {
+      if (err) return res.status(500).end();
+      if (!user) return res.status(401).end();
+
+      jwt.verify(passwordresettoken, secret, (err, _) => {
+        console.log(err);
+        if (err) {
+          return res.status(403).send();
+        }
+        if (passwordresettoken !== user.passwordresettoken) {
+          return res.status(401).end();
+        }
+
+        const jwttoken = jwt.sign(
+          { id: user._id, username: user.username, email: user.email },
+          secret,
+          { expiresIn: 86400 }
+        );
+        user.password = bcrypt.hashSync(req.body.password, 8);
+        user.passwordresettoken = "";
+        user.save();
+        return res
+          .status(200)
+          .json({
+            id: user._id,
+            token: jwttoken,
+            username: user.username,
+          })
+          .end();
+      });
+    }
+  );
+};
+
+exports.requestPasswordReset = (req, res) => {
+  const { username, email, phoneno } = req.body;
+  if ([username, email, phoneno].includes(undefined))
+    return res.status(400).send();
+
+  User.findOne(
+    {
+      username,
+      email,
+      phoneno,
+    },
+    (err, user) => {
+      if (err) return res.status(500).end();
+      if (!user) return res.status(401).end();
+
+      const jwttoken = jwt.sign(
+        { id: user._id, username: user.username, email: user.email },
+        secret,
+        { expiresIn: 600 }
+      );
+      user.passwordresettoken = jwttoken;
+      user.save();
+      return res.status(200).json({ passwordresettoken: jwttoken }).end();
+    }
+  );
+};
