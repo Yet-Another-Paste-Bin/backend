@@ -4,60 +4,54 @@ const jwt = require("jsonwebtoken");
 const secret = process.env.SECRET || "secretkey";
 const { nanoid } = require("nanoid");
 exports.signup = (req, res) => {
+  const { username, email, phoneno, password } = req.body;
+
   try {
     const newUser = new User({
       _id: nanoid(),
-      username: req.body.username,
-      email: req.body.email,
-      password: bcrypt.hashSync(req.body.password, 8),
-      phoneno: req.body.phoneno,
+      username: username,
+      email: email,
+      password: bcrypt.hashSync(password, 8),
+      phoneno: phoneno,
     });
 
-    User.findOne(
-      { username: req.body.username, email: req.body.email },
-      (err, user) => {
-        if (err) {
-          return res.status(500).end();
-        } else if (!user) {
-          newUser.save();
-          const jwttoken = jwt.sign(
-            {
-              id: newUser._id,
-              username: newUser.username,
-              email: newUser.email,
-            },
-            secret,
-            { expiresIn: 86400 }
-          );
-          return res
-            .status(200)
-            .json({
-              id: newUser._id,
-              token: jwttoken,
-              username: newUser.username,
-            })
-            .end();
-        } else {
-          return res.status(500).end();
-        }
-      }
-    );
+    User.findOne({ username, email }, (err, user) => {
+      if (err) return res.status(500).end();
+      if (user) return res.status(400).end();
+      newUser.save();
+      const jwttoken = jwt.sign(
+        {
+          id: newUser._id,
+          username: newUser.username,
+          email: newUser.email,
+        },
+        secret,
+        { expiresIn: 86400 }
+      );
+      return res
+        .status(200)
+        .json({
+          id: newUser._id,
+          token: jwttoken,
+          username: newUser.username,
+        })
+        .end();
+    });
   } catch (error) {
     res.status(500).end();
   }
 };
 
 exports.login = (req, res) => {
+  const { username, password } = req.body;
+  if ([username, password].includes(undefined)) return res.status(400).end();
   User.findOne(
-    { $or: [{ username: req.body.username }, { email: req.body.username }] },
+    { $or: [{ username: username }, { email: username }] },
     (err, user) => {
       if (err) return res.status(500).end();
       if (!user) return res.status(401).end();
 
-      const validPassword = bcrypt.compareSync(
-        req.body.password,
-        user.password
-      );
+      const validPassword = bcrypt.compareSync(password, user.password);
 
       if (!validPassword) {
         return res
