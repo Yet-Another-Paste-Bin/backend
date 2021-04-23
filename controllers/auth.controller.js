@@ -20,7 +20,23 @@ exports.signup = (req, res) => {
           return res.status(500).end();
         } else if (!user) {
           newUser.save();
-          return res.status(200).end();
+          const jwttoken = jwt.sign(
+            {
+              id: newUser._id,
+              username: newUser.username,
+              email: newUser.email,
+            },
+            secret,
+            { expiresIn: 86400 }
+          );
+          return res
+            .status(200)
+            .json({
+              id: newUser._id,
+              token: jwttoken,
+              username: newUser.username,
+            })
+            .end();
         } else {
           return res.status(500).end();
         }
