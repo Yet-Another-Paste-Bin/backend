@@ -26,7 +26,7 @@ module.exports = function checkDuplication(req, res, next) {
         const duplicate =
           user.username === req.body.username ? "Username" : "Email";
         return res
-          .status(400)
+          .status(409)
           .json({ message: `${duplicate} already registered !` })
           .end();
       }

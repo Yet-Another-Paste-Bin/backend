@@ -17,11 +17,11 @@ module.exports = function authToken(req, res, next) {
     return next();
   }
   if (!token) {
-    return res.status(403).send();
+    return res.status(400).send();
   }
   jwt.verify(token, secret, (err, decoded) => {
     if (err) {
-      return res.status(403).send();
+      return res.status(401).send();
     }
     req.body.owner_id = decoded.id;
     req.body.username = decoded.username;

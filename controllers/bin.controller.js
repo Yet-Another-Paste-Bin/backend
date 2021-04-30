@@ -66,7 +66,7 @@ function getBin(req, res) {
       if (err) {
         return res.status(500).json({ message: "Server Error" }).end();
       } else if (!bin) {
-        return res.status(404).json({ message: "Bin Not Found" }).end();
+        return res.status(204).json({ message: "Bin Not Found" }).end();
       } else if (
         bin.private &&
         (bin.owner_id === owner_id ||
@@ -77,7 +77,7 @@ function getBin(req, res) {
       } else if (!bin.private) {
         return res.status(200).json(bin).end();
       }
-      return res.status(403).json({ message: "Unauthorized" }).end();
+      return res.status(401).json({ message: "Unauthorized" }).end();
     }
   );
 }

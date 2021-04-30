@@ -49,7 +49,7 @@ exports.login = (req, res) => {
     { $or: [{ username: username }, { email: username }] },
     (err, user) => {
       if (err) return res.status(500).end();
-      if (!user) return res.status(401).end();
+      if (!user) return res.status(204).end();
 
       const validPassword = bcrypt.compareSync(password, user.password);
 
