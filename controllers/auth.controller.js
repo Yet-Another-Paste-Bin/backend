@@ -97,7 +97,6 @@ exports.forgotpassword = (req, res) => {
       if (!user) return res.status(401).end();
 
       jwt.verify(passwordresettoken, secret, (err, _) => {
-        console.log(err);
         if (err) {
           return res.status(403).send();
         }

@@ -14,4 +14,5 @@ module.exports = (app) => {
     controller.removeBin
   );
   app.get("/api/bin/:binId", auth_middleware, controller.getBin);
+  app.get("/api/bin", auth_middleware, controller.getAllBin);
 };

@@ -52,7 +52,6 @@ function getBin(req, res) {
   const { owner_id, username, email } = req.body;
 
   const binId = req.params.binId;
-
   Bin.findOne(
     {
       _id: binId,
@@ -82,4 +81,25 @@ function getBin(req, res) {
   );
 }
 
-module.exports = { addBin, removeBin, getBin };
+function getAllBin(req, res) {
+  const { owner_id, username, email } = req.body;
+  Bin.find(
+    {
+      $or: [
+        { owner_id },
+        { shared_with: { $in: [username] } },
+        { shared_with: { $in: [email] } },
+      ],
+    },
+    (err, bins) => {
+      if (err) {
+        return res.status(500).json({ message: "Server Error" }).end();
+      } else if (bins.length === 0) {
+        return res.status(204).json({ message: "Bins Not Found" }).end();
+      }
+      return res.status(200).json(bins).end();
+    }
+  );
+}
+
+module.exports = { addBin, removeBin, getBin, getAllBin };
