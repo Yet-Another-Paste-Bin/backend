@@ -111,4 +111,17 @@ function deleteBin(req, res) {
   });
 }
 
-module.exports = { addBin, removeBin, getBin, getAllBin, deleteBin };
+function updateBin(req, res) {
+  const { data, private, binId, owner_id } = req.body;
+  if (owner_id === undefined) return res.status(400).end();
+  Bin.findOne({ _id: binId, owner_id }, (err, bin) => {
+    if (err) return res.status(500).end();
+    if (!bin) return res.status(204).end();
+    bin.data = data || bin.data;
+    bin.private = private || bin.private;
+    bin.save();
+    return res.status(200).end();
+  });
+}
+
+module.exports = { addBin, removeBin, getBin, getAllBin, deleteBin, updateBin };
