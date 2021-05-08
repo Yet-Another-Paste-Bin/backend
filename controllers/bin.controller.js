@@ -1,6 +1,7 @@
 const Bin = require("../models/bin.model");
 const User = require("../models/user.model");
 const { nanoid } = require("nanoid");
+const { deleteOne } = require("../models/user.model");
 function addBin(req, res) {
   const { data, private, owner_id, shared_with } = req.body;
   const _id = nanoid();
@@ -102,4 +103,12 @@ function getAllBin(req, res) {
   );
 }
 
-module.exports = { addBin, removeBin, getBin, getAllBin };
+function deleteBin(req, res) {
+  const { owner_id, binId } = req.body;
+  if ([owner_id, binId].includes(undefined)) return res.status(400).end();
+  Bin.deleteOne({ _id: binId, owner_id }, (err) => {
+    if (err) return res.status(500).json(err).end();
+  });
+}
+
+module.exports = { addBin, removeBin, getBin, getAllBin, deleteBin };

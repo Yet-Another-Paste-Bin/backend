@@ -10,7 +10,7 @@ module.exports = function authToken(req, res, next) {
   }
 
   const token =
-    req.method === "POST"
+    req.method === "POST" || req.method === "DELETE"
       ? req.body.Authorization !== undefined
         ? req.body.Authorization.split(" ")[1]
         : undefined
