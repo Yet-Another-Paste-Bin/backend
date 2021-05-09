@@ -1,7 +1,7 @@
 const Bin = require("../models/bin.model");
 const User = require("../models/user.model");
 const { nanoid } = require("nanoid");
-const { deleteOne } = require("../models/user.model");
+
 function addBin(req, res) {
   const { data, private, owner_id, shared_with } = req.body;
   const _id = nanoid();
