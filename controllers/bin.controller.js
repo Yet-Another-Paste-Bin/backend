@@ -3,9 +3,16 @@ const User = require("../models/user.model");
 const { nanoid } = require("nanoid");
 
 function addBin(req, res) {
-  const { data, private, owner_id, shared_with } = req.body;
+  const { data, private, owner_id, shared_with, username } = req.body;
   const _id = nanoid();
-  const newBin = new Bin({ _id, data, private, owner_id, shared_with });
+  const newBin = new Bin({
+    _id,
+    data,
+    private,
+    owner_id,
+    shared_with,
+    owner_username: username,
+  });
 
   if (private) {
     User.findOne({ _id: owner_id }, (err, user) => {
