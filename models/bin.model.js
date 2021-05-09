@@ -4,7 +4,6 @@ const Bin = mongoose.model(
   "bins",
   new mongoose.Schema(
     {
-      _id: String,
       data: String,
       owner_id: String,
       owner_username: String,
