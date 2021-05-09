@@ -4,7 +4,7 @@ const secret = process.env.SECRET || "secretkey";
 module.exports = function authToken(req, res, next) {
   if (req.body === undefined) return res.status(400).end();
 
-  if (req.method === "POST" && !req.body.private) return next();
+  if (req.method === "POST" && !req.body.Authorization) return next();
 
   const token =
     req.method === "GET"
