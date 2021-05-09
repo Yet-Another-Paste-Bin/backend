@@ -13,16 +13,14 @@ function addBin(req, res) {
 
   if (private) {
     User.findOne({ _id: owner_id }, (err, user) => {
-      if (err) {
-        return res.status(500).json({ message: "Server Error" }).end();
-      }
+      if (err) return res.status(500).json({ message: "Server Error" }).end();
 
-      if (!user) {
+      if (!user)
         return res
           .status(400)
           .json({ message: "Invalid UserId or Username" })
           .end();
-      }
+
       newBin.save();
       return res.status(200).json({ binId: newBin._id }).end();
     });
@@ -40,12 +38,9 @@ function removeBin(req, res) {
       $or: [{ owner_id }, { shared_with: { $in: [username] } }],
     },
     (err, bin) => {
-      if (err) {
-        return res.status(500).json({ message: "Server Error" }).end();
-      }
-      if (!bin) {
-        return res.status(404).json({ message: "Bin Not Found" }).end();
-      }
+      if (err) return res.status(500).json({ message: "Server Error" }).end();
+
+      if (!bin) return res.status(404).json({ message: "Bin Not Found" }).end();
 
       bin.remove();
       return res.status(200).json({ message: "Bin is Deleted" }).end();
