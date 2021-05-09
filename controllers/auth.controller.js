@@ -2,13 +2,11 @@ const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const secret = process.env.SECRET || "secretkey";
-const { nanoid } = require("nanoid");
 exports.signup = (req, res) => {
   const { username, email, phoneno, password } = req.body;
 
   try {
     const newUser = new User({
-      _id: nanoid(),
       username: username,
       email: email,
       password: bcrypt.hashSync(password, 8),
