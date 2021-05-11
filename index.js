@@ -15,6 +15,7 @@ app.use(helmet());
 const env = process.env.NODE_ENV || "production";
 if (env === "development") {
   app.use(require("cors")());
+  app.use(require("morgan")("dev"));
 }
 
 mongoose.connect(DB_URL, {
