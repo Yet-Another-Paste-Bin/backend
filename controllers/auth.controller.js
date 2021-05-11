@@ -98,29 +98,12 @@ exports.forgotpassword = (req, res) => {
         if (!user) return res.status(401).end();
 
         jwt.verify(passwordresettoken, secret, (err, _) => {
-          if (err) {
-            return res.status(403).send();
-          }
-          if (passwordresettoken !== user.passwordresettoken) {
-            return res.status(401).end();
-          }
+          if (err) return res.status(403).send();
 
-          const jwttoken = jwt.sign(
-            { id: user._id, username: user.username, email: user.email },
-            secret,
-            { expiresIn: 86400 }
-          );
-          user.password = bcrypt.hashSync(password, 8);
-          user.passwordresettoken = "";
-          user.save();
-          return res
-            .status(200)
-            .json({
-              id: user._id,
-              token: jwttoken,
-              username: user.username,
-            })
-            .end();
+          if (passwordresettoken !== user.passwordresettoken)
+            return res.status(401).end();
+
+          return res.status(200).end();
         });
       }
     );
