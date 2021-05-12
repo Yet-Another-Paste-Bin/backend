@@ -3,6 +3,7 @@ application:
   name: "yapb-api"
   project: "yapb"
   organization: "QoveryCommunity"
+  dockerfile: Dockerfile
   publicly_accessible: true
   port: 3000
 routers:
