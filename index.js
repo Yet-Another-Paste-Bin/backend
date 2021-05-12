@@ -3,8 +3,8 @@ const mongoose = require("mongoose");
 const app = express();
 const helmet = require("helmet");
 
-// Get Port Number from Env (if exists) else set to 8000
-const PORT = process.env.PORT || 8000;
+// Get Port Number from Env (if exists) else set to 3000
+const PORT = process.env.PORT || 3000;
 
 // Get DB_URL from Env (if exists) else set to mongodb://localhost:27017/yapb
 const DB_URL = process.env.DB_URL || "mongodb://localhost:27017/yapb";

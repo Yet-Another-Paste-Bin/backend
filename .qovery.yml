@@ -3,9 +3,11 @@ application:
   name: "yapb-api"
   project: "yapb"
   organization: "QoveryCommunity"
+  publicly_accessible: true
+  port: 3000
 routers:
-- name: "main-yapb-api"
-  routes:
-  - application_name: "yapb-api"
-    paths:
-    - "/*"
+  - name: "main-yapb-api"
+    routes:
+      - application_name: "yapb-api"
+        paths:
+          - "/*"
