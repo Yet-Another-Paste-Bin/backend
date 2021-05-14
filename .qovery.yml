@@ -6,6 +6,10 @@ application:
   dockerfile: Dockerfile
   publicly_accessible: true
   port: 3000
+databases:
+  - type: redis
+    version: 6
+    name: rate-limit
 routers:
   - name: "main-yapb-api"
     routes:
