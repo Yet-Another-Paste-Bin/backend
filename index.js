@@ -16,6 +16,8 @@ const env = process.env.NODE_ENV || "production";
 if (env === "development") {
   app.use(require("cors")());
   app.use(require("morgan")("dev"));
+} else {
+  app.use(require("cors")({ origin: process.env.FRONTEND_URL }));
 }
 
 mongoose.connect(DB_URL, {
