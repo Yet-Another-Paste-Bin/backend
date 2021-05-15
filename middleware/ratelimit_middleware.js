@@ -1,10 +1,7 @@
 const rateLimit = require("express-rate-limit");
 const RedisStore = require("rate-limit-redis");
 const redis = require("redis");
-
-const connectionString =
-  process.env.QOVERY_DATABASE_RATE_LIMIT_CONNECTION_URI ||
-  "redis://:@localhost:6379";
+const { connectionString } = require("../config");
 
 const limitStore = new RedisStore({
     client: redis.createClient((redis_url = connectionString)),

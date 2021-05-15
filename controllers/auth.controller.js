@@ -1,7 +1,7 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const secret = process.env.SECRET || "secretkey";
+const { secret } = require("../config");
 exports.signup = (req, res) => {
   const { username, email, phoneno, password } = req.body;
 

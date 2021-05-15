@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
-const secret = process.env.SECRET || "secretkey";
-
+const { secret } = require("../config");
 module.exports = function authToken(req, res, next) {
   if (req.body === undefined) return res.status(400).end();
 
