@@ -3,15 +3,18 @@ const mongoose = require("mongoose");
 const app = express();
 const helmet = require("helmet");
 const { env, DB_URL, frontendUrl, PORT } = require("./config");
+const cors = require("cors");
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(helmet());
 if (env === "development") {
-  app.use(require("cors")());
+  app.use(cors());
   app.use(require("morgan")("dev"));
 } else {
-  app.use(require("cors")({ origin: frontendUrl }));
+  const prodCors = cors({ origin: frontendUrl });
+  app.use(prodCors);
+  app.options("*", prodCors);
 }
 
 mongoose.connect(DB_URL, {
