@@ -12,7 +12,7 @@ if (env === "development") {
   app.use(cors());
   app.use(require("morgan")("dev"));
 } else {
-  const prodCors = cors({ origin: frontendUrl });
+  const prodCors = cors();
   app.use(prodCors);
   app.options("*", prodCors);
 }
