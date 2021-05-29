@@ -55,11 +55,6 @@ function getBin(req, res) {
   Bin.findOne(
     {
       _id: binId,
-      $or: [
-        { owner_id },
-        { shared_with: { $in: [username] } },
-        { shared_with: { $in: [email] } },
-      ],
     },
     (err, bin) => {
       if (err) {

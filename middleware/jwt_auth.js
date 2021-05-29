@@ -20,11 +20,11 @@ module.exports = function authToken(req, res, next) {
   if (!token) return res.status(400).send();
 
   jwt.verify(token, secret, (err, decoded) => {
-    if (err) return res.status(401).send();
+    if (err) return next();
 
     req.body.owner_id = decoded.id;
     req.body.username = decoded.username;
     req.body.email = decoded.email;
-    next();
+    return next();
   });
 };
