@@ -52,11 +52,5 @@ const validate = ({ username, email, password, phoneno }) => {
   const usernameRe = /^[a-zA-Z0-9_]+$/.test(username);
   const passwordRe = /^[a-zA-Z0-9_]{7,29}$/.test(password);
   const phonenoRe = /^[0-9]{10}$/.test(phoneno);
-
-  console.log(emailRe);
-  console.log(usernameRe);
-  console.log(passwordRe);
-  console.log(phonenoRe);
-
   return ![emailRe, usernameRe, passwordRe, phonenoRe].includes(false);
 };
