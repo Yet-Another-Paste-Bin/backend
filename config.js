@@ -4,7 +4,7 @@ const DB_URL = process.env.DB_URL || "mongodb://localhost:27017/yapb";
 const env = process.env.NODE_ENV || "production";
 const frontendUrl = process.env.FRONTEND_URL;
 const connectionString =
-  REDIS_DB_URI ||
+  process.env.REDIS_DB_URI ||
   process.env.QOVERY_DATABASE_RATE_LIMIT_CONNECTION_URI ||
   "redis://:@localhost:6379";
 
