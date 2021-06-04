@@ -1,5 +1,4 @@
-const jwt = require("jsonwebtoken");
-const { secret } = require("../config");
+const { decodeJWTToken } = require("../utils/jwt_utils");
 module.exports = function authToken(req, res, next) {
   if (req.body === undefined) return res.status(400).end();
 
@@ -19,12 +18,11 @@ module.exports = function authToken(req, res, next) {
 
   if (!token) return res.status(400).send();
 
-  jwt.verify(token, secret, (err, decoded) => {
-    if (err) return next();
-
+  const decoded = decodeJWTToken(token);
+  if (decoded) {
     req.body.owner_id = decoded.id;
     req.body.username = decoded.username;
     req.body.email = decoded.email;
-    return next();
-  });
+  }
+  return next();
 };

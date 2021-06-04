@@ -1,6 +1,6 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const { decodeJWTToken, signJWTToken } = require("../utils/jwt_utils");
 const { secret } = require("../config");
 exports.signup = (req, res) => {
   const { username, email, phoneno, password } = req.body;
@@ -17,21 +17,20 @@ exports.signup = (req, res) => {
       if (err) return res.status(500).end();
       if (user) return res.status(400).end();
       newUser.save();
-      const jwttoken = jwt.sign(
+      const token = signJWTToken(
         {
           id: newUser._id,
           username: newUser.username,
           email: newUser.email,
         },
-        secret,
-        { expiresIn: 86400 }
+        864000
       );
       return res
         .status(200)
         .json({
           id: newUser._id,
-          token: jwttoken,
           username: newUser.username,
+          token,
         })
         .end();
     });
@@ -60,18 +59,16 @@ exports.login = (req, res) => {
           .end();
       }
 
-      const jwttoken = jwt.sign(
+      const token = signJWTToken(
         { id: user._id, username: user.username, email: user.email },
-        secret,
-        { expiresIn: 86400 }
+        86400
       );
-
       res
         .status(200)
         .json({
           id: user._id,
-          token: jwttoken,
           username: user.username,
+          token,
         })
         .end();
     }
@@ -84,9 +81,9 @@ exports.forgotpassword = (req, res) => {
   if ([password, passwordresettoken].includes(undefined))
     return res.status(400).send();
 
-  jwt.verify(passwordresettoken, secret, (err, decoded) => {
-    if (err) res.status(401).end();
-    const { username, id, email } = decoded;
+  const { username, id, email } = decodeJWTToken(passwordresettoken);
+  if ([username, id, email].includes(undefined)) return res.status(401).end();
+  else {
     User.findOne(
       {
         _id: id,
@@ -96,18 +93,16 @@ exports.forgotpassword = (req, res) => {
       (err, user) => {
         if (err) return res.status(500).end();
         if (!user) return res.status(401).end();
-
-        jwt.verify(passwordresettoken, secret, (err, _) => {
-          if (err) return res.status(403).send();
-
+        if (decodeJWTToken(passwordresettoken)) {
           if (passwordresettoken !== user.passwordresettoken)
             return res.status(401).end();
-
           return res.status(200).end();
-        });
+        } else {
+          if (err) return res.status(403).send();
+        }
       }
     );
-  });
+  }
 };
 
 exports.requestPasswordReset = (req, res) => {
