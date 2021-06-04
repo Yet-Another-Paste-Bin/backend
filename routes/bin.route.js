@@ -4,7 +4,6 @@ const {
   getAllBin,
   deleteBin,
   updateBin,
-  removeBin,
 } = require("../controllers/bin.controller");
 const { verifyBin } = require("../middleware/bin_checker");
 const auth_middleware = require("../middleware/jwt_auth");
@@ -24,11 +23,6 @@ module.exports = (app) => {
     "/api/bin",
     [rateLimiterPrimary, auth_middleware, verifyBin],
     addBin
-  );
-  app.delete(
-    "/api/bin",
-    [rateLimiterSecondary, auth_middleware, verifyBin],
-    removeBin
   );
   app.get("/api/bin/:binId", [rateLimiterPrimary, auth_middleware], getBin);
   app.get("/api/bin", [rateLimiterPrimary, auth_middleware], getAllBin);

@@ -1,7 +1,14 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const { decodeJWTToken, signJWTToken } = require("../utils/jwt_utils");
-const { secret } = require("../config");
+
+/**
+ * Handler function for {/api/signup} route
+ * @method POST
+ * @author Tejasvp25  <tejasvp25@gmail.com>
+ * @param {Object} req  Express Request object
+ * @param {Object} res  Express Response object
+ */
 exports.signup = (req, res) => {
   const { username, email, phoneno, password } = req.body;
 
@@ -14,8 +21,9 @@ exports.signup = (req, res) => {
     });
 
     User.findOne({ username, email }, (err, user) => {
+      //  Send HTTP status code 500 as a response if error occured
       if (err) return res.status(500).end();
-      if (user) return res.status(400).end();
+
       newUser.save();
       const token = signJWTToken(
         {
@@ -39,13 +47,24 @@ exports.signup = (req, res) => {
   }
 };
 
+/**
+ * Handler function for {/api/login} route
+ * @method POST
+ * @author Tejasvp25  <tejasvp25@gmail.com>
+ * @param {Object} req  Express Request object
+ * @param {Object} res  Express Response object
+ */
 exports.login = (req, res) => {
   const { username, password } = req.body;
+
+  //  Send HTTP status code 400 as a response if {username, password} is undefined
   if ([username, password].includes(undefined)) return res.status(400).end();
   User.findOne(
     { $or: [{ username: username }, { email: username }] },
     (err, user) => {
+      //  Send HTTP status code 500 as a response if error occured
       if (err) return res.status(500).end();
+      //  Send HTTP status code 204 as a response if user is not found
       if (!user) return res.status(204).end();
 
       const validPassword = bcrypt.compareSync(password, user.password);
@@ -75,13 +94,23 @@ exports.login = (req, res) => {
   );
 };
 
+/**
+ * Handler function for {/api/forgotpassword} route
+ * @method POST
+ * @author Tejasvp25  <tejasvp25@gmail.com>
+ * @param {Object} req  Express Request object
+ * @param {Object} res  Express Response object
+ */
 exports.forgotpassword = (req, res) => {
   const { password, passwordresettoken } = req.body;
 
+  //  Send HTTP status code 400 as a response if {passwordresettoken} or {password} is undefined
   if ([password, passwordresettoken].includes(undefined))
     return res.status(400).send();
 
   const { username, id, email } = decodeJWTToken(passwordresettoken);
+
+  //  Send HTTP status code 401 as a response if { username, id, email } includes undefined
   if ([username, id, email].includes(undefined)) return res.status(401).end();
   else {
     User.findOne(
@@ -91,11 +120,22 @@ exports.forgotpassword = (req, res) => {
         email,
       },
       (err, user) => {
+        //  Send HTTP status code 500 as a response if error occured
         if (err) return res.status(500).end();
+        //  Send HTTP status code 401 as a response user is not found
         if (!user) return res.status(401).end();
+
+        /**
+         * Decode provided passwordresettoken
+         * if provided passwordresettoken does not match with saved passwordresettok
+         * then Send HTTP status code 401 as a response
+         * else update password
+         */
         if (decodeJWTToken(passwordresettoken)) {
           if (passwordresettoken !== user.passwordresettoken)
             return res.status(401).end();
+          user.password = password;
+          user.save();
           return res.status(200).end();
         } else {
           if (err) return res.status(403).send();
@@ -105,8 +145,16 @@ exports.forgotpassword = (req, res) => {
   }
 };
 
+/**
+ * Handler function for {/api/requestpasswordreset} route
+ * @method POST
+ * @author Tejasvp25  <tejasvp25@gmail.com>
+ * @param {Object} req  Express Request object
+ * @param {Object} res  Express Response object
+ */
 exports.requestPasswordReset = (req, res) => {
   const { username, email, phoneno } = req.body;
+  //  Send HTTP status code 400 as a response if { username, email, phoneno } includes undefined
   if ([username, email, phoneno].includes(undefined))
     return res.status(400).send();
 
@@ -117,13 +165,14 @@ exports.requestPasswordReset = (req, res) => {
       phoneno,
     },
     (err, user) => {
+      //  Send HTTP status code 500 as a response if error occured
       if (err) return res.status(500).end();
+      //  Send HTTP status code 401 as a response if {user} not found
       if (!user) return res.status(401).end();
-
-      const jwttoken = jwt.sign(
+      // Generate Password reset token and Save to database
+      const jwttoken = signJWTToken(
         { id: user._id, username: user.username, email: user.email },
-        secret,
-        { expiresIn: 600 }
+        600
       );
       user.passwordresettoken = jwttoken;
       user.save();
