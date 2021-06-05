@@ -4,6 +4,7 @@ const app = express();
 const helmet = require("helmet");
 const { env, DB_URL, frontendUrl, PORT } = require("./config");
 const cors = require("cors");
+const compression = require("compression");
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -15,6 +16,9 @@ if (env === "development") {
   const prodCors = cors();
   app.use(prodCors);
   app.options("*", prodCors);
+
+  // Enable gZip compression with threshold 2kb
+  app.use(compression({ threshold: "2kb" }));
 }
 
 mongoose.connect(DB_URL, {
