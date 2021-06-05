@@ -14,22 +14,17 @@ module.exports = function checkDuplication(req, res, next) {
   if (req.body === undefined)
     return res.status(400).json({ message: "Bad Request" }).end();
 
+  const { username, email, password, phoneno } = req.body;
+
   //  Return HTTP status code 400 as a response if required parameter are not provided
-  if (
-    [
-      req.body.username,
-      req.body.email,
-      req.body.password,
-      req.body.phoneno,
-    ].includes(undefined)
-  ) {
+  if ([username, email, password, phoneno].includes(undefined))
     return res.status(400).json({ message: "Bad Request" }).end();
-  }
+
   // Trim all the paramters
-  req.body.username = req.body.username.trim();
-  req.body.email = req.body.email.trim();
-  req.body.password = req.body.password.trim();
-  req.body.phoneno = req.body.phoneno.trim();
+  req.body.username = username.trim();
+  req.body.email = email.trim();
+  req.body.password = password.trim();
+  req.body.phoneno = phoneno.trim();
 
   /**
    * Return HTTP status code 400 as a response
@@ -40,7 +35,7 @@ module.exports = function checkDuplication(req, res, next) {
 
   User.findOne(
     {
-      $or: [{ username: req.body.username }, { email: req.body.email }],
+      $or: [{ username: username }, { email: email }],
     },
     (err, user) => {
       /**
