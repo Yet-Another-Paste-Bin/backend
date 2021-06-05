@@ -2,21 +2,19 @@ const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
 const helmet = require("helmet");
-const { env, DB_URL, frontendUrl, PORT } = require("./config");
-const cors = require("cors");
+const { env, DB_URL, PORT } = require("./config");
+const cors = require("cors")();
 const compression = require("compression");
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(helmet());
+app.use(cors);
+app.options("*", cors);
+
 if (env === "development") {
-  app.use(cors());
   app.use(require("morgan")("dev"));
 } else {
-  const prodCors = cors();
-  app.use(prodCors);
-  app.options("*", prodCors);
-
   // Enable gZip compression with threshold 2kb
   app.use(compression({ threshold: "2kb" }));
 }
