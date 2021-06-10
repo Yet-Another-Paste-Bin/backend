@@ -23,24 +23,8 @@ exports.signup = (req, res) => {
     User.findOne({ username, email }, (err, user) => {
       //  Send HTTP status code 500 as a response if error occured
       if (err) return res.status(500).end();
-
       newUser.save();
-      const token = signJWTToken(
-        {
-          id: newUser._id,
-          username: newUser.username,
-          email: newUser.email,
-        },
-        86400000
-      );
-      return res
-        .status(200)
-        .json({
-          id: newUser._id,
-          username: newUser.username,
-          token,
-        })
-        .end();
+      return res.status(200).end();
     });
   } catch (error) {
     res.status(500).end();
