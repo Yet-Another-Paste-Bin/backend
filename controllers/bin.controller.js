@@ -123,6 +123,7 @@ function deleteBin(req, res) {
   Bin.deleteOne({ _id: binId, owner_id }, (err) => {
     //  Send HTTP status code 500 if error occured
     if (err) return res.status(500).json(err).end();
+    return res.status(200).end();
   });
 }
 
