@@ -1,7 +1,7 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const { decodeJWTToken, signJWTToken } = require("../utils/jwt_utils");
-
+const { getExpiry } = require("../utils/dateUtils");
 /**
  * Handler function for {/api/signup} route
  * @method POST
@@ -31,7 +31,7 @@ exports.signup = (req, res) => {
           username: newUser.username,
           email: newUser.email,
         },
-        864000
+        86400000
       );
       return res
         .status(200)
@@ -80,7 +80,7 @@ exports.login = (req, res) => {
 
       const token = signJWTToken(
         { id: user._id, username: user.username, email: user.email },
-        86400
+        86400000
       );
       res
         .status(200)
@@ -88,6 +88,7 @@ exports.login = (req, res) => {
           id: user._id,
           username: user.username,
           token,
+          expiry: getExpiry(),
         })
         .end();
     }
