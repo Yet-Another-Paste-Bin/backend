@@ -1,24 +1,26 @@
-const {
+import { Application } from "express";
+
+import {
   addBin,
   getBin,
   getAllBin,
   deleteBin,
   updateBin,
-} = require("../controllers/bin.controller");
-const { verifyBin } = require("../middleware/bin_checker");
-const auth_middleware = require("../middleware/jwt_auth");
-const {
+} from "../controllers/bin.controller";
+import { verifyBin } from "../middleware/bin_checker";
+import { authToken as auth_middleware } from "../middleware/jwt_auth";
+import {
   rateLimiterPrimary,
   rateLimiterSecondary,
-} = require("../middleware/ratelimit_middleware");
+} from "../middleware/ratelimit_middleware";
 
 /**
  * Register Bin Related API Routes
  * @author Tejasvp25  <tejasvp25@gmail.com>
  * @param {Express App Object} app
- * @Return null
+ * @Return function
  */
-module.exports = (app) => {
+export default function (app: Application) {
   app.post(
     "/api/bin",
     [rateLimiterPrimary, auth_middleware, verifyBin],
@@ -28,4 +30,4 @@ module.exports = (app) => {
   app.get("/api/bin", [rateLimiterPrimary, auth_middleware], getAllBin);
   app.delete("/api/bin", [rateLimiterSecondary, auth_middleware], deleteBin);
   app.put("/api/bin", auth_middleware, updateBin);
-};
+}

@@ -1,22 +1,23 @@
-const {
+import {
   login,
   signup,
   forgotpassword,
   requestPasswordReset,
-} = require("../controllers/auth.controller");
-const checkDuplication = require("../middleware/signup_middleware");
-const {
+} from "../controllers/auth.controller";
+import checkDuplication from "../middleware/signup_middleware";
+import {
   rateLimiterPrimary,
   rateLimiterSecondary,
-} = require("../middleware/ratelimit_middleware");
+} from "../middleware/ratelimit_middleware";
+import { Application } from "express";
 
 /**
  * Register Authentication Related API Routes
  * @author Tejasvp25  <tejasvp25@gmail.com>
  * @param {Express App Object} app
- * @Return null
+ * @Return function
  */
-module.exports = function (app) {
+export default function (app: Application) {
   app.post("/api/signup", [rateLimiterPrimary, checkDuplication], signup);
   app.post("/api/login", rateLimiterPrimary, login);
   app.post("/api/forgotpassword", rateLimiterSecondary, forgotpassword);
@@ -25,4 +26,4 @@ module.exports = function (app) {
     rateLimiterSecondary,
     requestPasswordReset
   );
-};
+}

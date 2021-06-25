@@ -1,4 +1,5 @@
-const { decodeJWTToken } = require("../utils/jwt_utils");
+import { NextFunction, Request, Response } from "express";
+import { decodeJWTToken } from "../utils/jwt_utils";
 
 /**
  * Authentication Middleware
@@ -8,14 +9,17 @@ const { decodeJWTToken } = require("../utils/jwt_utils");
  * @param {Object} res  Express Response object
  * @param {Function}  next
  */
-module.exports = function authToken(req, res, next) {
+export const authToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   //  Send HTTP status code 400 as a response if body is undefined
   if (req.body === undefined)
     return res.status(400).json({ message: "Bad Request" }).end();
 
   if (req.method === "POST" && !req.body.Authorization) return next();
-
-  const token =
+  const token: string =
     req.method === "GET"
       ? req.headers.authorization !== undefined
         ? req.headers.authorization.split(" ")[1]
@@ -36,5 +40,6 @@ module.exports = function authToken(req, res, next) {
     req.body.username = decoded.username;
     req.body.email = decoded.email;
   }
+
   return next();
 };

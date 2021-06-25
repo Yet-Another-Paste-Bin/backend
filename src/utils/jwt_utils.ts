@@ -1,5 +1,5 @@
-const { verify, sign } = require("jsonwebtoken");
-const { secret } = require("../config");
+import { secret } from "../config";
+import { verify, sign } from "jsonwebtoken";
 
 /**
  * Returns decode JWT Authentication token
@@ -7,7 +7,7 @@ const { secret } = require("../config");
  * @param {String} token    JWT Authentication Token
  * @return {Object} decoded token in form of object
  */
-const decodeJWTToken = (token) => {
+export const decodeJWTToken = (token: string): any => {
   try {
     return verify(token, secret); //   Return decoded Authentication token
   } catch {
@@ -22,7 +22,5 @@ const decodeJWTToken = (token) => {
  * @param {Number} expiresIn  Expiration time (milliseconds) for Authentication token
  * @returns {String} Authentication Token
  */
-const signJWTToken = (obj, expiresIn) =>
+export const signJWTToken = (obj: any, expiresIn: number): string =>
   sign({ ...obj }, secret, { expiresIn });
-
-module.exports = { decodeJWTToken, signJWTToken };

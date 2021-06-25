@@ -1,11 +1,11 @@
-const rateLimit = require("express-rate-limit");
-const RedisStore = require("rate-limit-redis");
-const redis = require("redis");
-const { connectionString } = require("../config");
+import { connectionString } from "../config";
+import rateLimit, { RateLimit } from "express-rate-limit";
+import RedisStore from "rate-limit-redis";
+import redis from "redis";
 
 // Create default RedisStore client with given {connectionString} RedisDB Connection URI
-const limitStore = new RedisStore({
-  client: redis.createClient((redis_url = connectionString)),
+const limitStore: RedisStore = new RedisStore({
+  client: redis.createClient(connectionString),
 });
 
 /**
@@ -15,7 +15,7 @@ const limitStore = new RedisStore({
  * {skipSuccessfulRequests} false - Don't Skip successful request for rate limiting
  * {skipFailedRequests} false - Don't Skip failed request for rate limiting
  */
-const rateLimiterPrimary = rateLimit({
+export const rateLimiterPrimary: RateLimit = rateLimit({
   store: limitStore,
   windowMs: 60 * 60 * 1000,
   max: 100,
@@ -30,11 +30,10 @@ const rateLimiterPrimary = rateLimit({
  * {skipSuccessfulRequests} true - Skip successful request for rate limiting
  * {skipFailedRequests} false - Don't Skip failed request for rate limiting
  */
-const rateLimiterSecondary = rateLimit({
+export const rateLimiterSecondary: RateLimit = rateLimit({
   store: limitStore,
   windowMs: 60 * 60 * 1000,
   max: 10,
   skipSuccessfulRequests: true,
   skipFailedRequests: false,
 });
-module.exports = { rateLimiterPrimary, rateLimiterSecondary };

@@ -1,4 +1,6 @@
-const User = require("../models/user.model");
+import { NextFunction, Request, Response } from "express";
+
+import User, { UserDocument } from "../models/user.model";
 
 /**
  * Middleware to check if user with given
@@ -9,7 +11,11 @@ const User = require("../models/user.model");
  * @param {Object} res  Express Response object
  * @param {Function}  next
  */
-module.exports = function checkDuplication(req, res, next) {
+const checkDuplication = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   //  Send HTTP status code 400 as a response if body is undefined
   if (req.body === undefined)
     return res.status(400).json({ message: "Bad Request" }).end();
@@ -37,7 +43,7 @@ module.exports = function checkDuplication(req, res, next) {
     {
       $or: [{ username: username }, { email: email }],
     },
-    (err, user) => {
+    (err: Error, user: UserDocument) => {
       /**
        * Return HTTP status code 500
        * if server error occured while searching for User
@@ -69,7 +75,8 @@ module.exports = function checkDuplication(req, res, next) {
  * @param {Object} obj
  * @Return {boolean}
  */
-const validate = ({ username, email, password, phoneno }) => {
+const validate = (obj: any): boolean => {
+  const { username, email, password, phoneno } = obj;
   //  Object parameter is destructured in {username,email,password,phoneno}
   const emailRe =
     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)*$/.test(
@@ -80,3 +87,5 @@ const validate = ({ username, email, password, phoneno }) => {
   const phonenoRe = /^[0-9]{10}$/.test(phoneno);
   return ![emailRe, usernameRe, passwordRe, phonenoRe].includes(false);
 };
+
+export default checkDuplication;

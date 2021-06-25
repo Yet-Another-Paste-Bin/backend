@@ -1,3 +1,5 @@
+import { NextFunction, Request, Response } from "express";
+
 /**
  * Middleware whether required parameter are provided or not
  *
@@ -6,28 +8,30 @@
  * @param {Object} res  Express Response object
  * @param {Function}  next
  */
-function verifyBin(req, res, next) {
+export const verifyBin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   //  Send HTTP status code 400 as a response if body is undefined
   if (req.body === undefined) return res.status(400).end();
 
-  const { binId, data, private, owner_id } = req.body;
+  const { binId, data, owner_id } = req.body;
+  const privateBin = req.body.private;
 
   //  Send HTTP status code 400 as a response {binId} and {owner_id} is not provided
   if (req.method === "DELETE" && ![binId, owner_id].includes(undefined))
     return res.status(400).end();
-
   /**
    * Send HTTP status code 400 as a response {data} and {private} is not provided
    * OR
    * bin is private and {owner_id} is not provided
    */
   if (
-    [data, private].includes(undefined) ||
-    (private && [owner_id].includes(undefined))
+    [data, privateBin].includes(undefined) ||
+    (privateBin && [owner_id].includes(undefined))
   )
     return res.status(400).end();
 
   return next();
-}
-
-module.exports = { verifyBin };
+};
